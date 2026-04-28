@@ -1,84 +1,102 @@
-#!/usr/bin/env python3
-
+"""
+Auteur : Sofian
+Date : 27.04.2026
+Desc : calculate a hash
+"""
 import hashlib
-from pathlib import Path
 
 
-def sha256_from_text(text: str) -> str:
-    """Calcule le hash SHA-256 d'un texte."""
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
-
-
-def sha256_from_file(file_path: Path) -> str:
-    """Calcule le hash SHA-256 d'un fichier (lecture binaire)."""
-    sha256 = hashlib.sha256()
-    with file_path.open("rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            sha256.update(chunk)
-    return sha256.hexdigest()
-
-
-def save_hash_to_file(hash_value: str, output_file: str = "hash_output.txt") -> None:
-    """Sauvegarde le hash dans un fichier texte."""
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(hash_value + "\n")
-
-
-def ask_save_result(hash_value: str) -> None:
-    """Propose à l'utilisateur de sauvegarder le résultat."""
-    choice = input("Souhaitez-vous sauvegarder le hash dans 'hash_output.txt' ? (o/n) : ").strip().lower()
-    if choice == "o":
-        save_hash_to_file(hash_value)
-        print("✅ Hash sauvegardé dans hash_output.txt")
-
-
-def main() -> None:
+def choice(text):
     while True:
-        print("")
-        print("--- Calculateur de hash SHA-256 ---")
-        print("[1] Hachage d’un texte saisi")
-        print("[2] Hachage d’un fichier texte")
-
-        choice = input("Votre choix : ").strip()
-
-        try:
-            if choice == "1":
-                text = input("Entrez le texte à hacher : ").strip()
-                if not text:
-                    raise ValueError("Le texte saisi est vide.")
-                print(repr(text))
-                hash_value = sha256_from_text(text)
-                print(f"\nHash SHA-256 :\n{hash_value}")
-                ask_save_result(hash_value)
-
-            elif choice == "2":
-                path_input = input("Entrez le chemin du fichier : ").strip()
-                if not path_input:
-                    raise ValueError("Chemin de fichier vide.")
-
-                file_path = Path(path_input)
+        user_input = input(text)
+        if user_input == "1":
+            return 1
+        if user_input == "2":
+            return 2
+        else:
+            print("entrée invalide")
 
 
-                if not file_path.exists():
-                    raise FileNotFoundError("Le fichier spécifié est introuvable.")
+user_input = choice("1 Hachage d’un texte saisi.\n2 Hachage d'un fichier texte existant.\n")
 
-                if not file_path.is_file():
-                    raise ValueError("Le chemin ne correspond pas à un fichier valide.")
+if user_input == 1:
+    try:
+        print("Entrez votre texte (ligne vide pour terminer) :")
 
-                hash_value = sha256_from_file(file_path)
-                print(f"\nHash SHA-256 du fichier :\n{hash_value}")
-                ask_save_result(hash_value)
+        lines = []
+        while True:
+            line = input()
+            if line == "":
+                break
+            lines.append(line)
 
+        hash_input = "\n".join(lines)
+        hash_object = hashlib.sha256()
+
+        hash_object.update(hash_input.encode('utf-8'))
+
+        hash_hex = hash_object.hexdigest()
+
+        print(f"\n{hash_hex}")
+
+        # if the file doesn't exist, it is automatically created
+        with open('hash_output', 'a') as f:
+            pass
+
+        with open('hash_output', 'r') as f:
+            # read the file for incrementation
+            lines = f.readlines()
+
+            if lines:
+                last_line = lines[-1]
+                first_char = last_line[0]
+
+                number = int(last_line.split(')')[0]) + 1
             else:
-                print("❌ Choix invalide. Veuillez sélectionner [1] ou [2].")
+                number = 1
 
-        except FileNotFoundError as e:
-            print(f"❌ Erreur : {e}")
-        except ValueError as e:
-            print(f"❌ Erreur : {e}")
-        except Exception as e:
-            print(f"❌ Erreur inattendue : {e}")
+        with open('hash_output', 'a') as f:
+            f.write(f"{number}) {hash_hex}\n")
 
+    except Exception as e:
+        print(f"Erreur: {e}")
 
-if __name__ == "__main__":
-    main()
+if user_input == 2:
+    filepath = input("veuillez entrer le chemin d'accès du fichier : ")
+
+    try:
+        hash_object = hashlib.sha256()
+
+        with open(filepath, 'rb') as f:
+            data = f.read().replace(b'\r\n', b'\n')
+
+        hash_object.update(data)
+
+        hash_hex = hash_object.hexdigest()
+        print(f"Hash SHA-256 du fichier: {hash_hex}")
+
+        # if the file doesn't exist, it is automatically created
+        with open('hash_output', 'a') as f:
+            pass
+
+        with open('hash_output', 'r') as f:
+            # read the file for incrementation
+            lines = f.readlines()
+            if lines:
+                last_line = lines[-1]
+                first_char = last_line[0]
+
+                number = int(last_line.split(')')[0]) + 1
+            else:
+                number = 1
+
+        with open('hash_output', 'a') as f:
+            f.write(f"{number}) {hash_hex}\n")
+
+    except FileNotFoundError:
+        print("Erreur: Fichier introuvable!")
+    except PermissionError:
+        print("Erreur: Pas la permission de lire ce fichier!")
+    except Exception as e:
+        print(f"Erreur: {e}")
+
