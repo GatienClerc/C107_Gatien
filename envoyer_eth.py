@@ -1,7 +1,8 @@
+from dotenv import load_dotenv
 from web3 import Web3
 from dotenv import load_dotenv
-
 import os
+import json
 
 # ==========================================================
 
@@ -26,7 +27,7 @@ PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
 # Montant à envoyer (en ETH)
 
-AMOUNT_TO_SEND = 0.1
+AMOUNT_TO_SEND = 0.01
 
 # ==========================================================
 
@@ -56,25 +57,21 @@ else:
 
 def lire_adresses(fichier):
     """
-
     Lire les adresses Ethereum depuis un fichier texte
-
-    Retourne une liste d’adresses
-
+    Retourne une liste d’adresses valides
     """
+
 
     adresses = []
 
     with open(fichier, "r") as f:
+        data = json.load(f)
 
-        for ligne in f:
+    for adresse, name in data.items():
 
-            adresse = ligne.strip()
-
-            # Vérifier que l’adresse est valide
-
-            if __________________________:
-                adresses.append(adresse)
+        # Vérifier que l’adresse est valide
+        if w3.is_checksum_address(adresse):
+            adresses.append((adresse, name))
 
     return adresses
 
@@ -92,12 +89,12 @@ def afficher_soldes(adresses):
 
     """
 
-    for adresse in adresses:
-        balance_wei = ________________________
+    for adresse ,name in adresses:
+        balance_wei = w3.eth.get_balance(adresse)
 
-        balance_eth = ________________________
+        balance_eth = w3.from_wei(balance_wei, "ether")
 
-        print(f"{adresse} : {balance_eth} ETH")
+        print(f"{adresse}, {name} : {balance_eth} ETH")
 
 
 # ==========================================================
@@ -119,23 +116,23 @@ def envoyer_eth(destinataire, montant_eth, nonce):
 
         "to": destinataire,
 
-        "value": ____________________________,
+        "value": w3.to_wei(montant_eth, "ether"),
 
-        "gas": ______________________________,
+        "gas": 21000,
 
-        "gasPrice": _________________________,
+        "gasPrice": w3.eth.gas_price,
 
-        "chainId": __________________________
+        "chainId": w3.eth.chain_id
 
     }
 
     # Signature de la transaction
 
-    signed_tx = _______________________________
+    signed_tx = w3.eth.account.sign_transaction(transaction, PRIVATE_KEY)
 
     # Envoi sur le réseau
 
-    tx_hash = _________________________________
+    tx_hash = w3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
     return tx_hash.hex()
 
@@ -147,7 +144,7 @@ def envoyer_eth(destinataire, montant_eth, nonce):
 # ==========================================================
 
 def main():
-    adresses = lire_adresses("adresses.txt")
+    adresses = lire_adresses("adresse.json")
 
     print("\n=== Soldes avant envoi ===")
 
@@ -155,11 +152,11 @@ def main():
 
     # Récupération du nonce initial
 
-    nonce = __________________________________
+    nonce = w3.eth.get_transaction_count(SENDER_ADDRESS)
 
     print("\n=== Envoi des transactions ===")
 
-    for adresse in adresses:
+    for adresse, name in adresses:
 
         try:
 
@@ -179,7 +176,7 @@ def main():
 
             # Incrément du nonce
 
-            nonce += _______
+            nonce += 1
 
 
 
