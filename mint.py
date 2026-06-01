@@ -23,7 +23,7 @@ SENDER_ADDRESS = "0x50496cb9D63347B77612e08b640F3A2B4e5B5A58"
 
 PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
-contract_address = "0x9A8C8E2EB8F6fA1Bd7EF9161417F64E48bf54225"
+contract_address = "0xb5913CF61fcbc543375FCba1A00BB6aB1fd093c0"
 
 # ==========================================================
 
@@ -56,7 +56,7 @@ contract = w3.eth.contract(
 )
 
 # URL de votre image
-metadata_url = "https://github.com/GatienClerc/C107_Gatien/blob/main/oui.png"
+metadata_url = "https://raw.githubusercontent.com/GatienClerc/C107_Gatien/refs/heads/main/nft.json"
 
 # Nonce
 nonce = w3.eth.get_transaction_count(SENDER_ADDRESS)
