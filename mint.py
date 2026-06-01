@@ -78,6 +78,18 @@ signed_tx = w3.eth.account.sign_transaction(
     PRIVATE_KEY
 )
 
+max_supply = contract.functions.maxSupply().call()
+
+for token_id in range(1, max_supply + 1):
+    try:
+        owner = contract.functions.ownerOf(token_id).call()
+
+        if owner.lower() == SENDER_ADDRESS.lower():
+            print("NFT trouvé :", token_id)
+
+    except Exception:
+        pass
+
 # Envoi
 tx_hash = w3.eth.send_raw_transaction(
     signed_tx.raw_transaction
