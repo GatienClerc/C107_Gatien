@@ -46,7 +46,7 @@ else:
 
 
 # Charger ABI
-with open("SimpleMintContract.abi", "r") as abi_file:
+with open("ex_6/ClercMintContract.abi", "r") as abi_file:
     abi = json.load(abi_file)
 
 # Créer instance du contrat
