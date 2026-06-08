@@ -23,7 +23,7 @@ SENDER_ADDRESS = "0x50496cb9D63347B77612e08b640F3A2B4e5B5A58"
 
 PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 
-contract_address = "0xb5913CF61fcbc543375FCba1A00BB6aB1fd093c0"
+contract_address = "0x5b771ee0c0246Fbd2C54c4037bEA259ED8c43490"
 
 # ==========================================================
 
